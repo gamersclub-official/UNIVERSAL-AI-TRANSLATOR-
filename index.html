@@ -1216,5 +1216,71 @@ async function submitReportForm(event) {
             }
         }
     </script>
+    <script>
+  // -------------------------------------------------------------
+  // 1. MICROPHONE & SYSTEM PERMISSIONS (First Tap Trigger)
+  // -------------------------------------------------------------
+  function requestAppPermissions() {
+    // Microphone Permission
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(function(stream) {
+          console.log("Microphone permission granted!");
+          stream.getTracks().forEach(track => track.stop());
+        })
+        .catch(function(err) {
+          console.log("Microphone error: " + err.message);
+        });
+    }
+
+    // Storage Permission
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist();
+    }
+  }
+
+  // Pehli baar screen par tap karte hi permissions trigger hongi
+  document.addEventListener('click', function initPermissions() {
+    requestAppPermissions();
+  }, { once: true });
+
+
+  // -------------------------------------------------------------
+  // 2. TEXT-TO-SPEECH (Android WebView Fix)
+  // -------------------------------------------------------------
+  function speakText(text, langCode = 'en-US') {
+    if (!('speechSynthesis' in window)) {
+      alert("Text-to-Speech is not supported in this browser.");
+      return;
+    }
+
+    // Cancel any previous audio
+    window.speechSynthesis.cancel();
+
+    let utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = langCode;
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    // Load voices properly for WebView
+    let voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      let matchedVoice = voices.find(v => v.lang.includes(langCode) || v.lang.startsWith(langCode.slice(0, 2)));
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      }
+    }
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // Reload voices when loaded in WebView
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices();
+    };
+  }
+    </script>
+    
 </body>
 </html>
