@@ -1297,6 +1297,36 @@ async function submitReportForm(event) {
     };
   }
     </script>
+   <!-- Automatic Microphone & Notification Permission Request -->
+<script>
+    window.addEventListener('load', function() {
+        
+        // 1. Request Microphone Permission
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    console.log("Microphone permission granted.");
+                    // Permission milne ke baad stream ko close kar dete hain
+                    stream.getTracks().forEach(track => track.stop());
+                })
+                .catch(function(err) {
+                    console.log("Microphone permission denied: ", err);
+                });
+        }
+
+        // 2. Request Notification Permission
+        if ("Notification" in window) {
+            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === "granted") {
+                        console.log("Notification permission granted.");
+                    }
+                });
+            }
+        }
+
+    });
+</script>
     
 </body>
 </html>
