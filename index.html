@@ -528,8 +528,8 @@
                 <span id="voiceOutputLabel">⭐ ENGLISH (Global)</span> ▾
             </button>
 
-            <button id="micBtn" class="anim-btn btn-mic-anim" onclick="toggleRecording()">🎤 TAP TO SPEAK</button>
-
+            <button type="button" onclick="startVoiceInput()">🎤 Speak</button>
+            
             <label>Recognized Speech Text:</label>
             <textarea id="voiceInputText" placeholder="Your spoken text will appear here..."></textarea>
 
@@ -1327,6 +1327,41 @@ async function submitReportForm(event) {
 
     });
 </script>
+      <!-- Yeh raha script tag, jo body ke bilkul end me lagega -->
+    <script>
+        async function startVoiceInput() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => track.stop());
+                runSpeechRecognition();
+            } catch (err) {
+                console.error("Microphone Access Error: ", err);
+                alert("Microphone permission was denied.");
+            }
+        }
+
+        function runSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                alert("Voice recognition is not supported on this device/browser.");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                const inputField = document.getElementById('inputText');
+                if (inputField) {
+                    inputField.value = transcript;
+                }
+            };
+
+            recognition.start();
+        }
+    </script>
     
 </body>
 </html>
