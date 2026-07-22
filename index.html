@@ -527,9 +527,9 @@
             <button class="lang-trigger-btn" id="voiceOutputBtn" onclick="openLangModal('voice_output')">
                 <span id="voiceOutputLabel">⭐ ENGLISH (Global)</span> ▾
             </button>
-
-            <button type="button" onclick="startVoiceInput()">🎤 Speak</button>
+            <button id="micBtn" class="anim-btn btn-mic-anim" onclick="toggleRecording()">🎤 TAP TO SPEAK</button>
             
+
             <label>Recognized Speech Text:</label>
             <textarea id="voiceInputText" placeholder="Your spoken text will appear here..."></textarea>
 
